@@ -11,8 +11,6 @@ use Symfony\Component\Validator\Violation\ConstraintViolationBuilderInterface;
 class EmailDomainValidatorTest extends TestCase
 {
 
-
-
  public function testCatchBadDomains()
  {
   $validator  = new EmailDomainValidator();
@@ -21,7 +19,6 @@ class EmailDomainValidatorTest extends TestCase
   $violation->expects($this->any())->method('setParameter')->willReturn($violation);
   $violation->expects($this->once())->method('addViolation');
   $context = $this->getMockBuilder(ExecutionContextInterface::class)->getMock();
-
   $context->expects($this->once())
    ->method('buildViolation')
    ->willReturn($violation);
