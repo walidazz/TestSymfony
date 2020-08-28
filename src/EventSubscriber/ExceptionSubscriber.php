@@ -29,7 +29,10 @@ class ExceptionSubscriber implements EventSubscriberInterface
 
  public function onException(ExceptionEvent $event)
  {
-  $message = new \Swift_Message();
+  $message = (new \Swift_Message())
+   ->setFrom($this->from)
+   ->setTo($this->to);
+
   $this->mailer->send($message);
  }
 }

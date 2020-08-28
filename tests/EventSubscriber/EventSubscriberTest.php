@@ -12,17 +12,13 @@ use Symfony\Component\HttpKernel\KernelInterface;
 
 class ExceptionSubscriberTest extends TestCase
 {
-
  public function testEventSubscription()
  {
-
   $this->assertArrayHasKey(ExceptionEvent::class, ExceptionSubscriber::getSubscribedEvents());
  }
 
- public function testOnExceptionSendEmail()
+ private function dispatch($mailer)
  {
-
-  $mailer     = $this->getMockBuilder(\Swift_Mailer::class)->disableOriginalConstructor()->getMock();
   $subscriber = new ExceptionSubscriber($mailer, 'from@domain.fr', 'to@domain.flex-row');
 
   $kernel = $this->getMockBuilder(KernelInterface::class)->getMock();
@@ -33,10 +29,32 @@ class ExceptionSubscriberTest extends TestCase
   $dispatcher = new EventDispatcher();
   $dispatcher->addSubscriber($subscriber);
   $dispatcher->dispatch($event);
+ }
+ public function testOnExceptionSendEmail()
+ {
+  $mailer = $this->getMockBuilder(\Swift_Mailer::class)->disableOriginalConstructor()->getMock();
+  $this->dispatch($mailer);
 
   // $subscriber->onException($event);
  }
 
-}
+ public function testOnSendDestinataire()
+ {
+  $mailer = $this->getMockBuilder(\Swift_Mailer::class)
+   ->disableOriginalConstructor()
+   ->getMock();
+  $mailer->expects($this->once())
+   ->method('send')
+   ->with($this->callback(function (\Swift_Message $message) {
+    return
+    array_key_exists('from@domain.fr', $message->getFrom()) &&
+    array_key_exists('to@domain.flex-row', $message->getTo());
+   }));
+  $this->dispatch($mailer);
 
-// Exercice à faire : https: //youtu.be/DZZbGpGy8sM?t=705
+ }
+
+//  bin/phpunit --filter ExceptionSubscriberTest
+
+ // Exercice à faire : https: //youtu.be/DZZbGpGy8sM?t=705
+}
