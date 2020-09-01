@@ -35,22 +35,32 @@ class SecurityControllerTest extends WebTestCase
 
  }
 
-//  public function testSuccessfulLogin()
- //  {
- //   $client  = static::createClient();
- //   $crawler = $client->request('get', '/login');
- //   $form    = $crawler->selectButton('Se connecter')->form([
- //    'email'    => 'walidazzimani@gmail.com',
- //    'password' => 'sharingan.',
- //   ]);
- //   $client->submit($form);
+ public function testSuccessfulLogin()
+ {
+  $client = static::createClient();
+  //Methode 1
 
-//   $this->assertResponseRedirects('/auth');
- //    $client->followRedirect();
+//   $crawler = $client->request('get', '/login');
+  //   $form    = $crawler->selectButton('Se connecter')->form([
+  //    'email'    => 'walidazzimani@gmail.com',
+  //    'password' => 'sharingan.',
+  //   ]);
+  //   $client->submit($form);
 
-//   $this->assertSelectorExists('.alert.alert-success');
+  $csrfToken = $client->getContainer()->get('security.csrf.token_manager')->getToken('authenticate');
+  $client->request('POST', '/login', [
+   '_csrf_token' => $csrfToken,
+   'email'       => 'walidazzimani@gmail.com',
+   'password'    => 'sharingan.',
 
-//  }
+  ]);
+
+  $this->assertResponseRedirects('/auth');
+//   $client->followRedirect();
+
+//   $this->assertSelectorExists('.alert-success');
+
+ }
  // ça marche pas ici
 }
 
